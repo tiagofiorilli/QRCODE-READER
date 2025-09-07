@@ -1,0 +1,84 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Leitor QR Code</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    h1 {
+      margin: 20px 0;
+    }
+    #reader {
+      width: 90vw;           /* ocupa 90% da largura da tela */
+      max-width: 400px;      /* nunca passa de 400px */
+      margin: 0 auto;        /* centraliza */
+      border: 2px solid #000;
+      border-radius: 10px;
+      background: #000;      /* fundo preto */
+    }
+    #result {
+      margin: 20px auto;
+      font-size: 18px;
+      font-weight: bold;
+      max-width: 400px;
+    }
+    button {
+      margin-top: 10px;
+      padding: 10px 20px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
+  </style>
+</head>
+<body>
+  <h1>📷 Leitor de QR Code</h1>
+  <div id="reader"></div>
+  <div id="result">Aponte a câmera para o QR Code</div>
+  <button onclick="resetScan()">Escanear novamente</button>
+
+  <script>
+    let alreadyScanned = false;
+    let html5QrCode;
+
+    function onScanSuccess(decodedText) {
+      if (!alreadyScanned) {
+        alreadyScanned = true;
+        document.getElementById("result").innerText = "🔎 Código lido: " + decodedText;
+        if (decodedText.startsWith("http")) {
+          window.open(decodedText, "_blank");
+        }
+      }
+    }
+
+    function startScanner() {
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess
+      ).catch(err => console.error("Erro ao iniciar câmera:", err));
+    }
+
+    function resetScan() {
+      alreadyScanned = false;
+      document.getElementById("result").innerText = "Aponte a câmera para o QR Code";
+    }
+
+    startScanner();
+  </script>
+</body>
+</html>

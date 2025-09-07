@@ -1,0 +1,37 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+  <meta charset="UTF-8">
+  <title>Leitor QR Code</title>
+  <script src="https://unpkg.com/html5-qrcode"></script>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
+    #reader { width: 300px; margin: auto; }
+    #result { margin-top: 20px; font-size: 18px; font-weight: bold; }
+  </style>
+</head>
+<body>
+  <h1>📷 Leitor de QR Code</h1>
+  <div id="reader"></div>
+  <div id="result">Aponte a câmera para o QR Code</div>
+
+  <script>
+    function onScanSuccess(decodedText) {
+      document.getElementById("result").innerText = "🔎 Código lido: " + decodedText;
+
+      // Aqui você pode buscar dados em uma API, Firebase ou até planilha Google
+      // Exemplo simples: abrir link do QR
+      if (decodedText.startsWith("http")) {
+        window.open(decodedText, "_blank");
+      }
+    }
+
+    let html5QrCode = new Html5Qrcode("reader");
+    html5QrCode.start(
+      { facingMode: "environment" }, // câmera traseira
+      { fps: 10, qrbox: 250 },
+      onScanSuccess
+    ).catch(err => console.error("Erro ao iniciar câmera:", err));
+  </script>
+</body>
+</html>
