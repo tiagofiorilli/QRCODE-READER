@@ -2,36 +2,110 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Leitor QR Code</title>
+  <title>Leitor QR Code - Fiorilli Bike Shop</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
-    body { font-family: Arial, sans-serif; text-align: center; padding: 20px; }
-    #reader { width: 300px; margin: auto; }
-    #result { margin-top: 20px; font-size: 18px; font-weight: bold; }
+    body {
+      font-family: Arial, sans-serif;
+      text-align: center;
+      margin: 0;
+      padding: 0;
+      background: #f4f4f4;
+    }
+    .tela {
+      display: none;
+      padding: 20px;
+    }
+    .ativa {
+      display: block;
+    }
+    h1 {
+      margin: 20px 0;
+    }
+    #reader {
+      width: 90vw;
+      max-width: 400px;
+      margin: 0 auto;
+      border: 2px solid #000;
+      border-radius: 10px;
+      background: #000;
+    }
+    #result {
+      margin: 20px auto;
+      font-size: 18px;
+      font-weight: bold;
+      max-width: 400px;
+    }
+    button {
+      margin-top: 20px;
+      padding: 12px 24px;
+      font-size: 16px;
+      border: none;
+      border-radius: 6px;
+      background: #007bff;
+      color: #fff;
+      cursor: pointer;
+    }
+    button:hover {
+      background: #0056b3;
+    }
   </style>
 </head>
 <body>
-  <h1>📷 Leitor de QR Code</h1>
-  <div id="reader"></div>
-  <div id="result">Aponte a câmera para o QR Code</div>
+  <!-- Tela inicial -->
+  <div id="tela-inicial" class="tela ativa">
+    <h1>🚴‍♂️ BEM-VINDO À<br>FIORILLI BIKE SHOP</h1>
+    <button onclick="abrirScanner()">Iniciar Scanner</button>
+  </div>
+
+  <!-- Tela do scanner -->
+  <div id="tela-scanner" class="tela">
+    <h1>📷 Leitor de QR Code</h1>
+    <div id="reader"></div>
+    <div id="result">Aponte a câmera para o QR Code</div>
+    <button onclick="resetScan()">Escanear novamente</button>
+    <button onclick="voltarInicio()">Voltar</button>
+  </div>
 
   <script>
-    function onScanSuccess(decodedText) {
-      document.getElementById("result").innerText = "🔎 Código lido: " + decodedText;
+    let alreadyScanned = false;
+    let html5QrCode;
 
-      // Aqui você pode buscar dados em uma API, Firebase ou até planilha Google
-      // Exemplo simples: abrir link do QR
-      if (decodedText.startsWith("http")) {
-        window.open(decodedText, "_blank");
+    function abrirScanner() {
+      document.getElementById("tela-inicial").classList.remove("ativa");
+      document.getElementById("tela-scanner").classList.add("ativa");
+
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess
+      ).catch(err => console.error("Erro ao iniciar câmera:", err));
+    }
+
+    function onScanSuccess(decodedText) {
+      if (!alreadyScanned) {
+        alreadyScanned = true;
+        document.getElementById("result").innerText = "🔎 Código lido: " + decodedText;
+        if (decodedText.startsWith("http")) {
+          window.open(decodedText, "_blank");
+        }
       }
     }
 
-    let html5QrCode = new Html5Qrcode("reader");
-    html5QrCode.start(
-      { facingMode: "environment" }, // câmera traseira
-      { fps: 10, qrbox: 250 },
-      onScanSuccess
-    ).catch(err => console.error("Erro ao iniciar câmera:", err));
+    function resetScan() {
+      alreadyScanned = false;
+      document.getElementById("result").innerText = "Aponte a câmera para o QR Code";
+    }
+
+    function voltarInicio() {
+      if (html5QrCode) {
+        html5QrCode.stop().then(() => {
+          document.getElementById("tela-scanner").classList.remove("ativa");
+          document.getElementById("tela-inicial").classList.add("ativa");
+        }).catch(err => console.error("Erro ao parar câmera:", err));
+      }
+    }
   </script>
 </body>
 </html>
