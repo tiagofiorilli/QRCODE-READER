@@ -66,20 +66,24 @@
     .hidden {
       display: none;
     }
-    /* Rodapé estilo Uber */
+    /* Rodapé estilo Uber modificado */
     footer {
       display: flex;
       justify-content: space-around;
       align-items: center;
       border-top: 1px solid #ddd;
-      background: #fff;
-      padding: 10px 0;
+      background: #FFD700; /* amarelo ouro */
+      padding: 12px 0;
     }
     .menu-item {
       text-align: center;
-      font-size: 14px;
-      color: #555;
+      font-size: 16px; /* texto maior */
+      color: #333;
       cursor: pointer;
+    }
+    .menu-item span {
+      display: block;
+      font-size: 30px; /* ícones maiores */
     }
     .menu-item.active {
       color: #000;
@@ -115,9 +119,15 @@
 
   <!-- Rodapé com menu -->
   <footer>
-    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">🏠<br>Início</div>
-    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">📷<br>Scanner</div>
-    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">👤<br>Conta</div>
+    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">
+      <span>🏠</span>Início
+    </div>
+    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">
+      <span>📷</span>Scanner
+    </div>
+    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">
+      <span>👤</span>Conta
+    </div>
   </footer>
 
   <script>
@@ -150,11 +160,9 @@
     }
 
     function mostrarTela(idTela) {
-      // esconde todas
       document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
-      // mostra só a escolhida
       document.getElementById(idTela).classList.remove('hidden');
-      // atualiza menu ativo
+
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
       if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
