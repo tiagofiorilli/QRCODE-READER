@@ -2,57 +2,137 @@
 <html lang="pt-BR">
 <head>
   <meta charset="UTF-8">
-  <title>Leitor QR Code</title>
+  <title>Fiorilli Bike Shop</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
     body {
       font-family: Arial, sans-serif;
-      text-align: center;
       margin: 0;
       padding: 0;
-      background: #f4f4f4;
+      background: #ffffff;
+      display: flex;
+      flex-direction: column;
+      height: 100vh;
+    }
+    header {
+      background: #fff;
+      padding: 15px;
+      text-align: left;
+      font-size: 22px;
+      font-weight: bold;
+      border-bottom: 1px solid #ddd;
+    }
+    .container {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      text-align: center;
+      padding: 20px;
     }
     h1 {
-      margin: 20px 0;
+      font-size: 24px;
+      margin-bottom: 20px;
+      color: #333;
+    }
+    button {
+      padding: 15px 30px;
+      font-size: 16px;
+      border: none;
+      border-radius: 8px;
+      background: #111;
+      color: #fff;
+      cursor: pointer;
+      font-weight: bold;
+    }
+    button:hover {
+      background: #333;
     }
     #reader {
-      width: 90vw;           /* ocupa 90% da largura da tela */
-      max-width: 400px;      /* nunca passa de 400px */
-      margin: 0 auto;        /* centraliza */
+      width: 90vw;
+      max-width: 400px;
+      margin: 20px auto;
       border: 2px solid #000;
       border-radius: 10px;
-      background: #000;      /* fundo preto */
+      background: #000;
     }
     #result {
-      margin: 20px auto;
+      margin: 15px auto;
       font-size: 18px;
       font-weight: bold;
       max-width: 400px;
     }
-    button {
-      margin-top: 10px;
-      padding: 10px 20px;
-      font-size: 16px;
-      border: none;
-      border-radius: 6px;
-      background: #007bff;
-      color: #fff;
+    .hidden {
+      display: none;
+    }
+    /* Rodapé estilo Uber */
+    footer {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      background: #fff;
+      padding: 10px 0;
+    }
+    .menu-item {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
       cursor: pointer;
     }
-    button:hover {
-      background: #0056b3;
+    .menu-item.active {
+      color: #000;
+      font-weight: bold;
     }
   </style>
 </head>
 <body>
-  <h1>📷 Leitor de QR Code</h1>
-  <div id="reader"></div>
-  <div id="result">Aponte a câmera para o QR Code</div>
-  <button onclick="resetScan()">Escanear novamente</button>
+  <!-- Topo -->
+  <header>
+    Fiorilli Bike Shop
+  </header>
+
+  <!-- Tela inicial -->
+  <div id="tela-inicial" class="container">
+    <h1>🚴‍♂️ Bem-vindo à Fiorilli Bike Shop</h1>
+    <button onclick="abrirScanner()">Iniciar Scanner</button>
+  </div>
+
+  <!-- Tela scanner -->
+  <div id="tela-scanner" class="container hidden">
+    <h1>📷 Leitor de QR Code</h1>
+    <div id="reader"></div>
+    <div id="result">Aponte a câmera para o QR Code</div>
+    <button onclick="resetScan()">Escanear novamente</button>
+  </div>
+
+  <!-- Tela conta -->
+  <div id="tela-conta" class="container hidden">
+    <h1>👤 Minha Conta</h1>
+    <p>Aqui futuramente você pode colocar informações do usuário.</p>
+  </div>
+
+  <!-- Rodapé com menu -->
+  <footer>
+    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">🏠<br>Início</div>
+    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">📷<br>Scanner</div>
+    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">👤<br>Conta</div>
+  </footer>
 
   <script>
     let alreadyScanned = false;
     let html5QrCode;
+
+    function abrirScanner() {
+      mostrarTela('tela-scanner');
+      html5QrCode = new Html5Qrcode("reader");
+      html5QrCode.start(
+        { facingMode: "environment" },
+        { fps: 10, qrbox: { width: 250, height: 250 } },
+        onScanSuccess
+      ).catch(err => console.error("Erro ao iniciar câmera:", err));
+    }
 
     function onScanSuccess(decodedText) {
       if (!alreadyScanned) {
@@ -64,21 +144,22 @@
       }
     }
 
-    function startScanner() {
-      html5QrCode = new Html5Qrcode("reader");
-      html5QrCode.start(
-        { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
-        onScanSuccess
-      ).catch(err => console.error("Erro ao iniciar câmera:", err));
-    }
-
     function resetScan() {
       alreadyScanned = false;
       document.getElementById("result").innerText = "Aponte a câmera para o QR Code";
     }
 
-    startScanner();
+    function mostrarTela(idTela) {
+      // esconde todas
+      document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+      // mostra só a escolhida
+      document.getElementById(idTela).classList.remove('hidden');
+      // atualiza menu ativo
+      document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+      if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
+      if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
+      if (idTela === 'tela-conta') document.getElementById('menu-conta').classList.add('active');
+    }
   </script>
 </body>
 </html>
