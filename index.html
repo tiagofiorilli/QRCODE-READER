@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+<head><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD700">
   <meta charset="UTF-8">
   <title>Fiorilli Bike Shop</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -167,7 +168,15 @@
       if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
       if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
       if (idTela === 'tela-conta') document.getElementById('menu-conta').classList.add('active');
+
     }
+      if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("✅ Service Worker registrado!"))
+        .catch((err) => console.error("❌ Erro no Service Worker:", err));
+  }
+</script>
+
   </script>
 </body>
 </html>
