@@ -66,6 +66,25 @@
     .hidden {
       display: none;
     }
+    /* Rodapé estilo Uber */
+    footer {
+      display: flex;
+      justify-content: space-around;
+      align-items: center;
+      border-top: 1px solid #ddd;
+      background: #fff;
+      padding: 10px 0;
+    }
+    .menu-item {
+      text-align: center;
+      font-size: 14px;
+      color: #555;
+      cursor: pointer;
+    }
+    .menu-item.active {
+      color: #000;
+      font-weight: bold;
+    }
   </style>
 </head>
 <body>
@@ -86,18 +105,27 @@
     <div id="reader"></div>
     <div id="result">Aponte a câmera para o QR Code</div>
     <button onclick="resetScan()">Escanear novamente</button>
-    <br><br>
-    <button onclick="voltarInicio()">Voltar</button>
   </div>
+
+  <!-- Tela conta -->
+  <div id="tela-conta" class="container hidden">
+    <h1>👤 Minha Conta</h1>
+    <p>Aqui futuramente você pode colocar informações do usuário.</p>
+  </div>
+
+  <!-- Rodapé com menu -->
+  <footer>
+    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">🏠<br>Início</div>
+    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">📷<br>Scanner</div>
+    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">👤<br>Conta</div>
+  </footer>
 
   <script>
     let alreadyScanned = false;
     let html5QrCode;
 
     function abrirScanner() {
-      document.getElementById("tela-inicial").classList.add("hidden");
-      document.getElementById("tela-scanner").classList.remove("hidden");
-
+      mostrarTela('tela-scanner');
       html5QrCode = new Html5Qrcode("reader");
       html5QrCode.start(
         { facingMode: "environment" },
@@ -121,13 +149,16 @@
       document.getElementById("result").innerText = "Aponte a câmera para o QR Code";
     }
 
-    function voltarInicio() {
-      if (html5QrCode) {
-        html5QrCode.stop().then(() => {
-          document.getElementById("tela-scanner").classList.add("hidden");
-          document.getElementById("tela-inicial").classList.remove("hidden");
-        }).catch(err => console.error("Erro ao parar câmera:", err));
-      }
+    function mostrarTela(idTela) {
+      // esconde todas
+      document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
+      // mostra só a escolhida
+      document.getElementById(idTela).classList.remove('hidden');
+      // atualiza menu ativo
+      document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+      if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
+      if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
+      if (idTela === 'tela-conta') document.getElementById('menu-conta').classList.add('active');
     }
   </script>
 </body>
