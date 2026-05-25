@@ -1,0 +1,11 @@
+{
+  "BIKE_001": {
+    "cliente": "Cliente Teste",
+    "telefone": "(12) 99999-9999",
+    "bike": "Caloi E-bike Peak",
+    "chassi": "CHASSI-TESTE-001",
+    "ultima_manutencao": "2026-05-24",
+    "status": "Em teste",
+    "observacoes": "Primeiro cadastro para testar leitura via QR Code."
+  }
+}

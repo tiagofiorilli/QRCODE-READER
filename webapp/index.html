@@ -1,6 +1,7 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head>
+<head><link rel="manifest" href="manifest.json">
+<meta name="theme-color" content="#FFD700">
   <meta charset="UTF-8">
   <title>Fiorilli Bike Shop</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
@@ -9,18 +10,18 @@
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #ffffff;
+      background: #FFD700; /* fundo amarelo em toda a página */
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
     header {
-      background: #fff;
-      padding: 15px;
-      text-align: left;
-      font-size: 22px;
+      background: #FFD700;
+      padding: 10px;
+      text-align: center;
+      font-size: 20px;
       font-weight: bold;
-      border-bottom: 1px solid #ddd;
+      border-bottom: 2px solid #333;
     }
     .container {
       flex: 1;
@@ -29,18 +30,18 @@
       justify-content: center;
       align-items: center;
       text-align: center;
-      padding: 20px;
+      padding: 10px;
     }
     h1 {
-      font-size: 24px;
-      margin-bottom: 20px;
-      color: #333;
+      font-size: 20px; /* menor para caber melhor */
+      margin-bottom: 15px;
+      color: #111;
     }
     button {
-      padding: 15px 30px;
-      font-size: 16px;
+      padding: 10px 20px;
+      font-size: 14px;
       border: none;
-      border-radius: 8px;
+      border-radius: 6px;
       background: #111;
       color: #fff;
       cursor: pointer;
@@ -50,36 +51,40 @@
       background: #333;
     }
     #reader {
-      width: 90vw;
-      max-width: 400px;
-      margin: 20px auto;
+      width: 80vw;
+      max-width: 300px; /* menor para não estourar a tela */
+      margin: 10px auto;
       border: 2px solid #000;
-      border-radius: 10px;
+      border-radius: 8px;
       background: #000;
     }
     #result {
-      margin: 15px auto;
-      font-size: 18px;
+      margin: 10px auto;
+      font-size: 16px;
       font-weight: bold;
-      max-width: 400px;
+      max-width: 300px;
     }
     .hidden {
       display: none;
     }
-    /* Rodapé estilo Uber */
+    /* Rodapé */
     footer {
       display: flex;
       justify-content: space-around;
       align-items: center;
-      border-top: 1px solid #ddd;
-      background: #fff;
-      padding: 10px 0;
+      border-top: 2px solid #333;
+      background: #FFD700;
+      padding: 8px 0;
     }
     .menu-item {
       text-align: center;
-      font-size: 14px;
-      color: #555;
+      font-size: 14px; /* texto menor */
+      color: #111;
       cursor: pointer;
+    }
+    .menu-item span {
+      display: block;
+      font-size: 24px; /* ícones menores que antes */
     }
     .menu-item.active {
       color: #000;
@@ -115,9 +120,15 @@
 
   <!-- Rodapé com menu -->
   <footer>
-    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">🏠<br>Início</div>
-    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">📷<br>Scanner</div>
-    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">👤<br>Conta</div>
+    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">
+      <span>🏠</span>Início
+    </div>
+    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">
+      <span>📷</span>Scanner
+    </div>
+    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">
+      <span>👤</span>Conta
+    </div>
   </footer>
 
   <script>
@@ -129,20 +140,64 @@
       html5QrCode = new Html5Qrcode("reader");
       html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 250, height: 250 } },
+        { fps: 10, qrbox: { width: 200, height: 200 } }, // caixa menor
         onScanSuccess
       ).catch(err => console.error("Erro ao iniciar câmera:", err));
     }
 
-    function onScanSuccess(decodedText) {
-      if (!alreadyScanned) {
-        alreadyScanned = true;
-        document.getElementById("result").innerText = "🔎 Código lido: " + decodedText;
-        if (decodedText.startsWith("http")) {
-          window.open(decodedText, "_blank");
-        }
-      }
+    async function onScanSuccess(decodedText) {
+  if (alreadyScanned) return;
+
+  alreadyScanned = true;
+
+  const codigo = decodedText.trim().toUpperCase();
+
+  document.getElementById("result").innerText = "🔎 Código lido: " + codigo;
+
+  try {
+    const resposta = await fetch("clientes_bikes.json");
+    const dados = await resposta.json();
+
+    const bike = dados[codigo];
+
+    if (!bike) {
+      document.getElementById("result").innerHTML = `
+        ❌ Código não encontrado:<br><strong>${codigo}</strong>
+      `;
+      return;
     }
+
+    document.getElementById("result").innerHTML = `
+      <div style="
+        background:#fff;
+        color:#111;
+        padding:15px;
+        border-radius:12px;
+        border:2px solid #111;
+        text-align:left;
+        max-width:320px;
+        margin:auto;
+      ">
+        <h2 style="margin-top:0;">🚴 Dados da Bike</h2>
+        <p><strong>Código:</strong> ${codigo}</p>
+        <p><strong>Cliente:</strong> ${bike.cliente}</p>
+        <p><strong>Telefone:</strong> ${bike.telefone}</p>
+        <p><strong>Bike:</strong> ${bike.bike}</p>
+        <p><strong>Chassi:</strong> ${bike.chassi}</p>
+        <p><strong>Última manutenção:</strong> ${bike.ultima_manutencao}</p>
+        <p><strong>Status:</strong> ${bike.status}</p>
+        <p><strong>Observações:</strong> ${bike.observacoes}</p>
+      </div>
+    `;
+
+  } catch (erro) {
+    document.getElementById("result").innerHTML = `
+      ❌ Erro ao carregar o arquivo de dados.<br>
+      Verifique se <strong>clientes_bikes.json</strong> está no GitHub.
+    `;
+    console.error(erro);
+  }
+}
 
     function resetScan() {
       alreadyScanned = false;
@@ -150,16 +205,22 @@
     }
 
     function mostrarTela(idTela) {
-      // esconde todas
       document.querySelectorAll('.container').forEach(el => el.classList.add('hidden'));
-      // mostra só a escolhida
       document.getElementById(idTela).classList.remove('hidden');
-      // atualiza menu ativo
+
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
       if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
       if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
       if (idTela === 'tela-conta') document.getElementById('menu-conta').classList.add('active');
+
     }
+      if ("serviceWorker" in navigator) {
+      navigator.serviceWorker.register("service-worker.js")
+        .then(() => console.log("✅ Service Worker registrado!"))
+        .catch((err) => console.error("❌ Erro no Service Worker:", err));
+  }
+</script>
+
   </script>
 </body>
 </html>
