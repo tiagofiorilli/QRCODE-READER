@@ -7,5 +7,25 @@
     "ultima_manutencao": "2026-05-24",
     "status": "Em teste",
     "observacoes": "Primeiro cadastro para testar leitura via QR Code."
+  },
+
+  "BIKE_002": {
+    "cliente": "Maria Silva",
+    "telefone": "(12) 98888-8888",
+    "bike": "Sense Impact",
+    "chassi": "CHASSI-TESTE-002",
+    "ultima_manutencao": "2026-05-24",
+    "status": "Pronta",
+    "observacoes": "Bike revisada e pronta para retirada."
+  },
+
+  "BIKE_003": {
+    "cliente": "João Souza",
+    "telefone": "(12) 97777-7777",
+    "bike": "Specialized Rockhopper",
+    "chassi": "CHASSI-TESTE-003",
+    "ultima_manutencao": "2026-05-24",
+    "status": "Em manutenção",
+    "observacoes": "Aguardando troca de relação."
   }
 }

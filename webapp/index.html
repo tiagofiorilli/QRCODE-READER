@@ -6,6 +6,8 @@
   <title>Fiorilli Bike Shop</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
   <style>
+
+
     body {
       font-family: Arial, sans-serif;
       margin: 0;
@@ -90,6 +92,25 @@
       color: #000;
       font-weight: bold;
     }
+    input, textarea {
+  width: 85%;
+  max-width: 320px;
+  margin: 5px 0;
+  padding: 8px;
+  border: 2px solid #111;
+  border-radius: 8px;
+  font-size: 14px;
+}
+
+textarea {
+  min-height: 60px;
+}
+
+#resultado-json {
+  height: 160px;
+  margin-top: 10px;
+  background: #fff;
+}
   </style>
 </head>
 <body>
@@ -103,6 +124,25 @@
     <h1>🚴‍♂️ Bem-vindo à Fiorilli Bike Shop</h1>
     <button onclick="abrirScanner()">Iniciar Scanner</button>
   </div>
+
+  <div id="tela-cadastro" class="container hidden">
+  <h1>📝 Cadastro de Bike</h1>
+
+  <input id="cad-codigo" placeholder="Código ex: BIKE_004">
+  <input id="cad-cliente" placeholder="Nome do cliente">
+  <input id="cad-telefone" placeholder="Telefone">
+  <input id="cad-bike" placeholder="Modelo da bike">
+  <input id="cad-chassi" placeholder="Chassi">
+  <input id="cad-data" type="date">
+  <input id="cad-status" placeholder="Status">
+  <textarea id="cad-observacoes" placeholder="Observações"></textarea>
+
+  <button onclick="gerarCadastroJSON()">Gerar cadastro</button>
+
+  <textarea id="resultado-json" readonly placeholder="JSON gerado aparecerá aqui"></textarea>
+</div>
+
+
 
   <!-- Tela scanner -->
   <div id="tela-scanner" class="container hidden">
@@ -120,23 +160,48 @@
 
   <!-- Rodapé com menu -->
   <footer>
-    <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">
-      <span>🏠</span>Início
-    </div>
-    <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">
-      <span>📷</span>Scanner
-    </div>
-    <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">
-      <span>👤</span>Conta
-    </div>
-  </footer>
+  <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">
+    <span>🏠</span>Início
+  </div>
+
+  <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">
+    <span>📷</span>Scanner
+  </div>
+
+  <div id="menu-cadastro" class="menu-item" onclick="mostrarTela('tela-cadastro')">
+    <span>📝</span>Cadastro
+  </div>
+
+  <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">
+    <span>👤</span>Conta
+  </div>
+</footer>
+
+  function gerarCadastroJSON() {
+  const codigo = document.getElementById("cad-codigo").value.trim().toUpperCase();
+
+  const cadastro = {
+    cliente: document.getElementById("cad-cliente").value.trim(),
+    telefone: document.getElementById("cad-telefone").value.trim(),
+    bike: document.getElementById("cad-bike").value.trim(),
+    chassi: document.getElementById("cad-chassi").value.trim(),
+    ultima_manutencao: document.getElementById("cad-data").value,
+    status: document.getElementById("cad-status").value.trim(),
+    observacoes: document.getElementById("cad-observacoes").value.trim()
+  };
+
+  const texto = `"${codigo}": ${JSON.stringify(cadastro, null, 2)}`;
+
+  document.getElementById("resultado-json").value = texto;
+}
+
 
   <script>
     let alreadyScanned = false;
     let html5QrCode;
 
     function abrirScanner() {
-      mostrarTela('tela-scanner');
+      if (idTela === 'tela-cadastro') document.getElementById('menu-cadastro').classList.add('active');
       html5QrCode = new Html5Qrcode("reader");
       html5QrCode.start(
         { facingMode: "environment" },
