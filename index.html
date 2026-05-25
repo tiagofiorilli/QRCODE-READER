@@ -1,20 +1,23 @@
 <!DOCTYPE html>
 <html lang="pt-BR">
-<head><link rel="manifest" href="manifest.json">
-<meta name="theme-color" content="#FFD700">
+<head>
+  <link rel="manifest" href="manifest.json">
+  <meta name="theme-color" content="#FFD700">
   <meta charset="UTF-8">
   <title>Fiorilli Bike Shop</title>
   <script src="https://unpkg.com/html5-qrcode"></script>
+
   <style>
     body {
       font-family: Arial, sans-serif;
       margin: 0;
       padding: 0;
-      background: #FFD700; /* fundo amarelo em toda a página */
+      background: #FFD700;
       display: flex;
       flex-direction: column;
       height: 100vh;
     }
+
     header {
       background: #FFD700;
       padding: 10px;
@@ -23,6 +26,7 @@
       font-weight: bold;
       border-bottom: 2px solid #333;
     }
+
     .container {
       flex: 1;
       display: flex;
@@ -31,12 +35,15 @@
       align-items: center;
       text-align: center;
       padding: 10px;
+      overflow-y: auto;
     }
+
     h1 {
-      font-size: 20px; /* menor para caber melhor */
+      font-size: 20px;
       margin-bottom: 15px;
       color: #111;
     }
+
     button {
       padding: 10px 20px;
       font-size: 14px;
@@ -46,28 +53,56 @@
       color: #fff;
       cursor: pointer;
       font-weight: bold;
+      margin: 5px;
     }
+
     button:hover {
       background: #333;
     }
+
+    input, textarea {
+      width: 85%;
+      max-width: 320px;
+      margin: 5px 0;
+      padding: 8px;
+      border: 2px solid #111;
+      border-radius: 8px;
+      font-size: 14px;
+      box-sizing: border-box;
+    }
+
+    textarea {
+      min-height: 60px;
+    }
+
+    #resultado-json {
+      height: 150px;
+      margin-top: 10px;
+      background: #fff;
+      font-family: monospace;
+      font-size: 12px;
+    }
+
     #reader {
       width: 80vw;
-      max-width: 300px; /* menor para não estourar a tela */
+      max-width: 300px;
       margin: 10px auto;
       border: 2px solid #000;
       border-radius: 8px;
       background: #000;
     }
+
     #result {
       margin: 10px auto;
       font-size: 16px;
       font-weight: bold;
-      max-width: 300px;
+      max-width: 330px;
     }
+
     .hidden {
       display: none;
     }
-    /* Rodapé */
+
     footer {
       display: flex;
       justify-content: space-around;
@@ -76,35 +111,35 @@
       background: #FFD700;
       padding: 8px 0;
     }
+
     .menu-item {
       text-align: center;
-      font-size: 14px; /* texto menor */
+      font-size: 13px;
       color: #111;
       cursor: pointer;
+      flex: 1;
     }
+
     .menu-item span {
       display: block;
-      font-size: 24px; /* ícones menores que antes */
+      font-size: 22px;
     }
+
     .menu-item.active {
       color: #000;
       font-weight: bold;
     }
   </style>
 </head>
-<body>
-  <!-- Topo -->
-  <header>
-    Fiorilli Bike Shop
-  </header>
 
-  <!-- Tela inicial -->
+<body>
+  <header>Fiorilli Bike Shop</header>
+
   <div id="tela-inicial" class="container">
     <h1>🚴‍♂️ Bem-vindo à Fiorilli Bike Shop</h1>
     <button onclick="abrirScanner()">Iniciar Scanner</button>
   </div>
 
-  <!-- Tela scanner -->
   <div id="tela-scanner" class="container hidden">
     <h1>📷 Leitor de QR Code</h1>
     <div id="reader"></div>
@@ -112,20 +147,41 @@
     <button onclick="resetScan()">Escanear novamente</button>
   </div>
 
-  <!-- Tela conta -->
+  <div id="tela-cadastro" class="container hidden">
+    <h1>📝 Cadastro de Bike</h1>
+
+    <input id="cad-codigo" placeholder="Código ex: BIKE_004">
+    <input id="cad-cliente" placeholder="Nome do cliente">
+    <input id="cad-telefone" placeholder="Telefone">
+    <input id="cad-bike" placeholder="Modelo da bike">
+    <input id="cad-chassi" placeholder="Chassi">
+    <input id="cad-data" type="date">
+    <input id="cad-status" placeholder="Status">
+    <textarea id="cad-observacoes" placeholder="Observações"></textarea>
+
+    <button onclick="gerarCadastroJSON()">Gerar cadastro</button>
+
+    <textarea id="resultado-json" readonly placeholder="JSON gerado aparecerá aqui"></textarea>
+  </div>
+
   <div id="tela-conta" class="container hidden">
     <h1>👤 Minha Conta</h1>
     <p>Aqui futuramente você pode colocar informações do usuário.</p>
   </div>
 
-  <!-- Rodapé com menu -->
   <footer>
     <div id="menu-inicio" class="menu-item active" onclick="mostrarTela('tela-inicial')">
       <span>🏠</span>Início
     </div>
+
     <div id="menu-scanner" class="menu-item" onclick="abrirScanner()">
       <span>📷</span>Scanner
     </div>
+
+    <div id="menu-cadastro" class="menu-item" onclick="mostrarTela('tela-cadastro')">
+      <span>📝</span>Cadastro
+    </div>
+
     <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">
       <span>👤</span>Conta
     </div>
@@ -133,71 +189,76 @@
 
   <script>
     let alreadyScanned = false;
-    let html5QrCode;
+    let html5QrCode = null;
 
     function abrirScanner() {
       mostrarTela('tela-scanner');
+
+      if (html5QrCode) {
+        return;
+      }
+
       html5QrCode = new Html5Qrcode("reader");
+
       html5QrCode.start(
         { facingMode: "environment" },
-        { fps: 10, qrbox: { width: 200, height: 200 } }, // caixa menor
+        { fps: 10, qrbox: { width: 200, height: 200 } },
         onScanSuccess
       ).catch(err => console.error("Erro ao iniciar câmera:", err));
     }
 
     async function onScanSuccess(decodedText) {
-  if (alreadyScanned) return;
+      if (alreadyScanned) return;
 
-  alreadyScanned = true;
+      alreadyScanned = true;
 
-  const codigo = decodedText.trim().toUpperCase();
+      const codigo = decodedText.trim().toUpperCase();
 
-  document.getElementById("result").innerText = "🔎 Código lido: " + codigo;
+      document.getElementById("result").innerText = "🔎 Código lido: " + codigo;
 
-  try {
-    const resposta = await fetch("clientes_bikes.json");
-    const dados = await resposta.json();
+      try {
+        const resposta = await fetch("clientes_bikes.json");
+        const dados = await resposta.json();
 
-    const bike = dados[codigo];
+        const bike = dados[codigo];
 
-    if (!bike) {
-      document.getElementById("result").innerHTML = `
-        ❌ Código não encontrado:<br><strong>${codigo}</strong>
-      `;
-      return;
+        if (!bike) {
+          document.getElementById("result").innerHTML = `
+            ❌ Código não encontrado:<br><strong>${codigo}</strong>
+          `;
+          return;
+        }
+
+        document.getElementById("result").innerHTML = `
+          <div style="
+            background:#fff;
+            color:#111;
+            padding:15px;
+            border-radius:12px;
+            border:2px solid #111;
+            text-align:left;
+            max-width:320px;
+            margin:auto;
+          ">
+            <h2 style="margin-top:0;">🚴 Dados da Bike</h2>
+            <p><strong>Código:</strong> ${codigo}</p>
+            <p><strong>Cliente:</strong> ${bike.cliente}</p>
+            <p><strong>Telefone:</strong> ${bike.telefone}</p>
+            <p><strong>Bike:</strong> ${bike.bike}</p>
+            <p><strong>Chassi:</strong> ${bike.chassi}</p>
+            <p><strong>Última manutenção:</strong> ${bike.ultima_manutencao}</p>
+            <p><strong>Status:</strong> ${bike.status}</p>
+            <p><strong>Observações:</strong> ${bike.observacoes}</p>
+          </div>
+        `;
+      } catch (erro) {
+        document.getElementById("result").innerHTML = `
+          ❌ Erro ao carregar o arquivo de dados.<br>
+          Verifique se <strong>clientes_bikes.json</strong> está no GitHub.
+        `;
+        console.error(erro);
+      }
     }
-
-    document.getElementById("result").innerHTML = `
-      <div style="
-        background:#fff;
-        color:#111;
-        padding:15px;
-        border-radius:12px;
-        border:2px solid #111;
-        text-align:left;
-        max-width:320px;
-        margin:auto;
-      ">
-        <h2 style="margin-top:0;">🚴 Dados da Bike</h2>
-        <p><strong>Código:</strong> ${codigo}</p>
-        <p><strong>Cliente:</strong> ${bike.cliente}</p>
-        <p><strong>Telefone:</strong> ${bike.telefone}</p>
-        <p><strong>Bike:</strong> ${bike.bike}</p>
-        <p><strong>Chassi:</strong> ${bike.chassi}</p>
-        <p><strong>Última manutenção:</strong> ${bike.ultima_manutencao}</p>
-        <p><strong>Status:</strong> ${bike.status}</p>
-        <p><strong>Observações:</strong> ${bike.observacoes}</p>
-      </div>
-    `;
-
-  } catch (erro) {
-    document.getElementById("result").innerHTML = `
-      ❌ Erro ao carregar o arquivo de dados.<br>
-      Verifique se <strong>clientes_bikes.json</strong> está no GitHub.
-    `;
-    console.error(erro);
-  }
-}
 
     function resetScan() {
       alreadyScanned = false;
@@ -209,18 +270,41 @@
       document.getElementById(idTela).classList.remove('hidden');
 
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
+
       if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
       if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
+      if (idTela === 'tela-cadastro') document.getElementById('menu-cadastro').classList.add('active');
       if (idTela === 'tela-conta') document.getElementById('menu-conta').classList.add('active');
-
     }
-      if ("serviceWorker" in navigator) {
+
+    function gerarCadastroJSON() {
+      const codigo = document.getElementById("cad-codigo").value.trim().toUpperCase();
+
+      if (!codigo) {
+        alert("Preencha o código da bike. Exemplo: BIKE_004");
+        return;
+      }
+
+      const cadastro = {
+        cliente: document.getElementById("cad-cliente").value.trim(),
+        telefone: document.getElementById("cad-telefone").value.trim(),
+        bike: document.getElementById("cad-bike").value.trim(),
+        chassi: document.getElementById("cad-chassi").value.trim(),
+        ultima_manutencao: document.getElementById("cad-data").value,
+        status: document.getElementById("cad-status").value.trim(),
+        observacoes: document.getElementById("cad-observacoes").value.trim()
+      };
+
+      const texto = `"${codigo}": ${JSON.stringify(cadastro, null, 2)}`;
+
+      document.getElementById("resultado-json").value = texto;
+    }
+
+    if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
         .then(() => console.log("✅ Service Worker registrado!"))
         .catch((err) => console.error("❌ Erro no Service Worker:", err));
-  }
-</script>
-
+    }
   </script>
 </body>
 </html>
