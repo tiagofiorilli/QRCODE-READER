@@ -147,6 +147,17 @@
     <button onclick="resetScan()">Escanear novamente</button>
   </div>
 
+  <div id="tela-admin" class="container hidden">
+  <h1>🔐 Área Admin</h1>
+
+  <input id="senha-admin" type="password" placeholder="Digite a senha de admin">
+
+  <button onclick="verificarAdmin()">Entrar</button>
+
+  <p id="msg-admin"></p>
+  </div>
+
+
   <div id="tela-cadastro" class="container hidden">
     <h1>📝 Cadastro de Bike</h1>
 
@@ -178,8 +189,8 @@
       <span>📷</span>Scanner
     </div>
 
-    <div id="menu-cadastro" class="menu-item" onclick="mostrarTela('tela-cadastro')">
-      <span>📝</span>Cadastro
+    <div id="menu-admin" class="menu-item" onclick="mostrarTela('tela-admin')">
+      <span>🔐</span>Admin
     </div>
 
     <div id="menu-conta" class="menu-item" onclick="mostrarTela('tela-conta')">
@@ -271,9 +282,9 @@
 
       document.querySelectorAll('.menu-item').forEach(el => el.classList.remove('active'));
 
+      if (idTela === 'tela-admin') document.getElementById('menu-admin').classList.add('active');
       if (idTela === 'tela-inicial') document.getElementById('menu-inicio').classList.add('active');
       if (idTela === 'tela-scanner') document.getElementById('menu-scanner').classList.add('active');
-      if (idTela === 'tela-cadastro') document.getElementById('menu-cadastro').classList.add('active');
       if (idTela === 'tela-conta') document.getElementById('menu-conta').classList.add('active');
     }
 
@@ -299,6 +310,17 @@
 
       document.getElementById("resultado-json").value = texto;
     }
+
+    function verificarAdmin() {
+  const senha = document.getElementById("senha-admin").value;
+
+  if (senha === "1234") {
+    document.getElementById("msg-admin").innerText = "";
+    mostrarTela("tela-cadastro");
+  } else {
+    document.getElementById("msg-admin").innerText = "❌ Senha incorreta.";
+  }
+}
 
     if ("serviceWorker" in navigator) {
       navigator.serviceWorker.register("service-worker.js")
