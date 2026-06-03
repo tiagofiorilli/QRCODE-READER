@@ -27,5 +27,15 @@
     "ultima_manutencao": "2026-05-24",
     "status": "Em manutenção",
     "observacoes": "Aguardando troca de relação."
-  }
+  },
+
+  "BIKE_005": {
+  "cliente": "Daiany",
+  "telefone": "12991545999",
+  "bike": "Swift",
+  "chassi": "Kkk",
+  "ultima_manutencao": "2026-06-02",
+  "status": "Nova",
+  "observacoes": ""
+}
 }
