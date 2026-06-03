@@ -37,5 +37,15 @@
     "ultima_manutencao": "2026-06-02",
     "status": "Nova",
     "observacoes": ""
-  }
+  },
+
+  "BIKE__04": {
+  "cliente": "joaquim",
+  "telefone": "Pocargar",
+  "bike": "colgano",
+  "chassi": "24242424",
+  "ultima_manutencao": "2026-01-01",
+  "status": "nova",
+  "observacoes": "meia boca a bike"
+}
 }
